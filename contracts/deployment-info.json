@@ -1,0 +1,10 @@
+{
+  "network": "celoSepolia",
+  "chainId": 11142220,
+  "contractAddress": "0x6F491FaBdEc72fD14e9E014f50B2ffF61C508bf1",
+  "deployer": "0xA0b5D5441f77EC8F5245feCd27aFfF652345D52F",
+  "transactionHash": "0x53be04d35ef6b5bc888aa85050af62a680f5389c4cc548d066d1549afd69cf2a",
+  "blockNumber": 10855590,
+  "timestamp": "2025-11-26T07:37:00.000Z",
+  "explorerUrl": "https://sepolia.celoscan.io/address/0x6F491FaBdEc72fD14e9E014f50B2ffF61C508bf1"
+}
