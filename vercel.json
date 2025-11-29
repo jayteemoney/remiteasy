@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "name": "remiteasy",
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend/dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_CONTRACT_ADDRESS": "0x6F491FaBdEc72fD14e9E014f50B2ffF61C508bf1",
+    "VITE_RPC_URL": "https://forno.celo-sepolia.celo-testnet.org/",
+    "VITE_CHAIN_ID": "11142220"
+  },
+  "build": {
+    "env": {
+      "VITE_CONTRACT_ADDRESS": "0x6F491FaBdEc72fD14e9E014f50B2ffF61C508bf1",
+      "VITE_RPC_URL": "https://forno.celo-sepolia.celo-testnet.org/",
+      "VITE_CHAIN_ID": "11142220"
+    }
+  },
+  "installCommand": "cd frontend && npm install",
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/dist"
+}
