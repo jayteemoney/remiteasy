@@ -426,7 +426,7 @@ Built with ❤️ for the Celo MiniPay Hackathon 2025
 For questions, feedback, or collaboration:
 - GitHub Issues: [Create an issue](../../issues)
 - Twitter: [@RemitEasy](#) (coming soon)
-- Email: contact@remiteasy.io (coming soon)
+
 
 ---
 
