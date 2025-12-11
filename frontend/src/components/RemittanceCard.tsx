@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Target, User, Calendar, CheckCircle2, XCircle, AlertCircle } from 'lucide-react'
 import { formatCelo } from '../lib/constants'
@@ -21,7 +22,12 @@ export function RemittanceCard({
   isCreator,
   isRecipient,
 }: RemittanceCardProps) {
-  const progress = Number(remittance.currentAmount * 100n / remittance.targetAmount)
+  // Memoize progress calculation to avoid expensive BigInt arithmetic on every render
+  const progress = useMemo(
+    () => Number(remittance.currentAmount * 100n / remittance.targetAmount),
+    [remittance.currentAmount, remittance.targetAmount]
+  )
+
   const isComplete = remittance.currentAmount >= remittance.targetAmount
 
   // Format date

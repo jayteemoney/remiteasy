@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { useCreateRemittance } from '../hooks/useRemitEscrow'
 import { parseCelo } from '../lib/constants'
+import { VALIDATION } from '../lib/config'
 import { resolvePhoneToAddress, getTestPhoneNumbers, formatPhoneNumber } from '../lib/minipay'
 
 /**
@@ -51,8 +52,33 @@ export function RemitForm() {
 
     // Validate amount
     const amount = parseFloat(targetAmount)
-    if (isNaN(amount) || amount <= 0) {
+    if (isNaN(amount)) {
       toast.error('Please enter a valid amount')
+      return
+    }
+
+    // Enforce minimum amount
+    if (amount < VALIDATION.MIN_REMITTANCE_AMOUNT) {
+      toast.error(`Amount must be at least ${VALIDATION.MIN_REMITTANCE_AMOUNT} CELO`)
+      return
+    }
+
+    // Enforce maximum amount
+    if (amount > VALIDATION.MAX_REMITTANCE_AMOUNT) {
+      toast.error(`Amount cannot exceed ${VALIDATION.MAX_REMITTANCE_AMOUNT.toLocaleString()} CELO`)
+      return
+    }
+
+    // Validate decimal precision (max 18 decimals)
+    const decimalPlaces = targetAmount.split('.')[1]?.length || 0
+    if (decimalPlaces > VALIDATION.AMOUNT_DECIMALS) {
+      toast.error(`Amount can have at most ${VALIDATION.AMOUNT_DECIMALS} decimal places`)
+      return
+    }
+
+    // Validate purpose length
+    if (purpose.length > VALIDATION.MAX_PURPOSE_LENGTH) {
+      toast.error(`Purpose must be ${VALIDATION.MAX_PURPOSE_LENGTH} characters or less`)
       return
     }
 
@@ -290,8 +316,9 @@ export function RemitForm() {
           <input
             id="target-amount"
             type="number"
-            step="0.01"
-            min="0"
+            step="0.000000000000000001"
+            min={VALIDATION.MIN_REMITTANCE_AMOUNT}
+            max={VALIDATION.MAX_REMITTANCE_AMOUNT}
             value={targetAmount}
             onChange={(e) => setTargetAmount(e.target.value)}
             placeholder="100.00"
@@ -300,7 +327,7 @@ export function RemitForm() {
             aria-describedby="amount-help"
           />
           <p id="amount-help" className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Minimum 0.01 CELO (native token)
+            Between {VALIDATION.MIN_REMITTANCE_AMOUNT} and {VALIDATION.MAX_REMITTANCE_AMOUNT.toLocaleString()} CELO (max {VALIDATION.AMOUNT_DECIMALS} decimals)
           </p>
         </div>
 
@@ -318,13 +345,19 @@ export function RemitForm() {
             onChange={(e) => setPurpose(e.target.value)}
             placeholder="e.g., Family medical expenses, School fees, Emergency fund..."
             rows={3}
+            maxLength={VALIDATION.MAX_PURPOSE_LENGTH}
             className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 transition-all resize-none"
             disabled={isPending || isConfirming}
             aria-describedby="purpose-help"
           />
-          <p id="purpose-help" className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Describe what this remittance is for
-          </p>
+          <div className="flex items-center justify-between mt-1">
+            <p id="purpose-help" className="text-xs text-gray-500 dark:text-gray-400">
+              Describe what this remittance is for
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {purpose.length}/{VALIDATION.MAX_PURPOSE_LENGTH}
+            </p>
+          </div>
         </div>
 
         {/* Submit Button */}

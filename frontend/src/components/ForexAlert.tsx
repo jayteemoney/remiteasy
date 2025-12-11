@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import { TrendingUp, TrendingDown, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
@@ -68,16 +68,14 @@ export function ForexAlert() {
     }
   }, [currentPrice, priceHistory])
 
-  // Calculate price trend
-  const getTrend = () => {
+  // Memoize price trend calculation to avoid recalculating on every render
+  const trend = useMemo(() => {
     if (priceHistory.length < 2) return 'neutral'
     const previousPrice = priceHistory[priceHistory.length - 2]
     if (currentPrice > previousPrice) return 'up'
     if (currentPrice < previousPrice) return 'down'
     return 'neutral'
-  }
-
-  const trend = getTrend()
+  }, [priceHistory, currentPrice])
 
   if (isLoading) {
     return (

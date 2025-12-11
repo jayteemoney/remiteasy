@@ -1,5 +1,6 @@
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
 import { CONTRACT_ADDRESS, REMIT_ESCROW_ABI } from '../lib/constants'
+import { POLLING_INTERVALS } from '../lib/config'
 
 // Types
 export interface Remittance {
@@ -23,7 +24,7 @@ export function useGetRemittance(remittanceId: number | undefined) {
     args: remittanceId !== undefined ? [BigInt(remittanceId)] : undefined,
     query: {
       enabled: remittanceId !== undefined,
-      refetchInterval: 3000, // Refetch every 3 seconds for real-time updates
+      refetchInterval: POLLING_INTERVALS.REMITTANCE_DETAILS,
     },
   })
 }
@@ -36,7 +37,7 @@ export function useGetUserRemittances(address: `0x${string}` | undefined) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      refetchInterval: 3000, // Refetch every 3 seconds for real-time updates
+      refetchInterval: POLLING_INTERVALS.USER_REMITTANCES,
     },
   })
 }
@@ -49,7 +50,7 @@ export function useGetRecipientRemittances(address: `0x${string}` | undefined) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      refetchInterval: 3000, // Refetch every 3 seconds for real-time updates
+      refetchInterval: POLLING_INTERVALS.RECIPIENT_REMITTANCES,
     },
   })
 }

@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { Inbox, Loader2 } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -29,9 +30,10 @@ export function RemittanceList() {
     )
   }
 
-  // Combine created and receiving remittances, removing duplicates
-  const allRemittanceIds = Array.from(
-    new Set([...(created || []), ...(receiving || [])])
+  // Memoize remittance ID combination to avoid recreating Set/Array on every render
+  const allRemittanceIds = useMemo(
+    () => Array.from(new Set([...(created || []), ...(receiving || [])])),
+    [created, receiving]
   )
 
   if (allRemittanceIds.length === 0) {

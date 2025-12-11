@@ -10,6 +10,7 @@ import {
   Remittance,
 } from '../hooks/useRemitEscrow'
 import { parseCelo } from '../lib/constants'
+import { ConfirmDialog } from './ui/ConfirmDialog'
 
 interface ContributionTrackerProps {
   remittanceId: number
@@ -33,6 +34,7 @@ export function ContributionTracker({
   const { address, isConnected } = useAccount()
   const [contributionAmount, setContributionAmount] = useState('')
   const [showContributeInput, setShowContributeInput] = useState(false)
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 
   const {
     contribute,
@@ -94,17 +96,15 @@ export function ContributionTracker({
     }
   }
 
-  const handleCancel = async () => {
+  const handleCancelClick = () => {
     if (!isCreator) {
       toast.error('Only the creator can cancel')
       return
     }
+    setShowCancelConfirm(true)
+  }
 
-    const confirmed = window.confirm(
-      'Are you sure you want to cancel this remittance? All contributors will be refunded.'
-    )
-    if (!confirmed) return
-
+  const handleCancelConfirm = async () => {
     try {
       cancelRemittance(remittanceId)
       toast.loading('Cancelling...', { id: `cancel-${remittanceId}` })
@@ -216,7 +216,7 @@ export function ContributionTracker({
         <motion.button
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
-          onClick={handleCancel}
+          onClick={handleCancelClick}
           disabled={isCancelling || isCancelConfirming}
           className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:from-gray-600 disabled:to-gray-600 text-white font-medium rounded-lg shadow-md transition-all disabled:cursor-not-allowed"
         >
@@ -233,6 +233,19 @@ export function ContributionTracker({
           )}
         </motion.button>
       )}
+
+      {/* Cancel Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showCancelConfirm}
+        onClose={() => setShowCancelConfirm(false)}
+        onConfirm={handleCancelConfirm}
+        title="Cancel Remittance?"
+        message="Are you sure you want to cancel this remittance? All contributors will be refunded automatically."
+        confirmText="Yes, Cancel"
+        cancelText="No, Keep It"
+        variant="danger"
+        isLoading={isCancelling || isCancelConfirming}
+      />
     </div>
   )
 }
