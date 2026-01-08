@@ -31,7 +31,7 @@ export function WalletConnect() {
         className="flex items-center gap-3"
       >
         <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-lg">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+          <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
           <span className="text-sm font-mono text-green-400">
             {truncateAddress(address)}
           </span>
@@ -71,13 +71,13 @@ export function WalletConnect() {
       whileTap={{ scale: 0.98 }}
       onClick={handleConnect}
       disabled={isPending}
-      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:from-gray-600 disabled:to-gray-600 text-white font-medium rounded-lg shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+      className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:from-gray-600 disabled:to-gray-600 text-white font-medium rounded-lg shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
       aria-label="Connect wallet"
     >
       {isPending ? (
         <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
-        <Wallet className="w-4 h-4" />
+        <Wallet className="w-4 h-8" />
       )}
       <span className="text-sm font-semibold">
         {isPending ? 'Connecting...' : 'Connect Wallet'}
