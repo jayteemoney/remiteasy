@@ -7,6 +7,7 @@ import { useCreateRemittance } from '../hooks/useRemitEscrow'
 import { parseCelo } from '../lib/constants'
 import { VALIDATION } from '../lib/config'
 import { resolvePhoneToAddress, getTestPhoneNumbers, formatPhoneNumber } from '../lib/minipay'
+import { sanitizePurpose } from '../lib/sanitize'
 
 /**
  * RemitForm Component
@@ -118,7 +119,8 @@ export function RemitForm() {
 
     try {
       const amountInWei = parseCelo(targetAmount)
-      createRemittance(finalRecipientAddress, amountInWei, purpose)
+      const sanitizedPurpose = sanitizePurpose(purpose)
+      createRemittance(finalRecipientAddress, amountInWei, sanitizedPurpose)
       toast.loading('Creating remittance...', { id: 'create-remittance' })
     } catch (error) {
       console.error('Error creating remittance:', error)
@@ -179,11 +181,10 @@ export function RemitForm() {
                   setRecipient('')
                   setResolvedAddress(null)
                 }}
-                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md transition-all ${
-                  !usePhoneNumber
-                    ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400'
-                }`}
+                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md transition-all ${!usePhoneNumber
+                  ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400'
+                  }`}
                 aria-label="Use wallet address"
               >
                 <Wallet className="w-4 h-4" />
@@ -196,11 +197,10 @@ export function RemitForm() {
                   setRecipient('')
                   setResolvedAddress(null)
                 }}
-                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md transition-all ${
-                  usePhoneNumber
-                    ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400'
-                }`}
+                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md transition-all ${usePhoneNumber
+                  ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400'
+                  }`}
                 aria-label="Use phone number with MiniPay"
               >
                 <Phone className="w-4 h-4" />
@@ -376,8 +376,8 @@ export function RemitForm() {
                 {isResolving
                   ? 'Resolving phone...'
                   : isPending
-                  ? 'Confirm in wallet...'
-                  : 'Creating...'}
+                    ? 'Confirm in wallet...'
+                    : 'Creating...'}
               </span>
             </>
           ) : (

@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers, run, network } from "hardhat";
 
 /**
  * Deployment script for RemitEscrow contract
@@ -84,6 +84,30 @@ async function main() {
   console.log("");
 
   console.log("✨ Deployment complete!");
+  console.log("");
+
+  // Verify contract on Celoscan/Etherscan if not on local network
+  if (network.name !== "hardhat" && network.name !== "localhost") {
+    console.log("⏳ Waiting for block confirmations before verification...");
+    // Wait for 6 block confirmations
+    await remitEscrow.deploymentTransaction()?.wait(6);
+
+    console.log("🔍 Verifying contract...");
+    try {
+      await run("verify:verify", {
+        address: contractAddress,
+        constructorArguments: [PRICE_FEED_ADDRESS],
+      });
+      console.log("✅ Contract verified successfully!");
+    } catch (error: any) {
+      if (error.message.toLowerCase().includes("already verified")) {
+        console.log("ℹ️ Contract is already verified.");
+      } else {
+        console.log("❌ Verification failed:", error.message);
+      }
+    }
+  }
+
   console.log("");
   console.log("📋 Next Steps:");
   console.log("  1. Save the contract address for frontend configuration");
