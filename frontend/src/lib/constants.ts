@@ -1,10 +1,11 @@
 import RemitEscrowABI from './RemitEscrowABI.json'
+import { env } from './env'
 
-export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`
+export const CONTRACT_ADDRESS = env.CONTRACT_ADDRESS
 
 export const REMIT_ESCROW_ABI = RemitEscrowABI
 
-export const CHAIN_ID = Number(import.meta.env.VITE_CHAIN_ID) || 11142220
+export const CHAIN_ID = env.CHAIN_ID
 
 // For displaying amounts
 export const formatCelo = (value: bigint): string => {

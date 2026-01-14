@@ -1,6 +1,7 @@
 import { http, createConfig } from 'wagmi'
 import { celoSepolia } from 'wagmi/chains'
 import { injected, walletConnect } from 'wagmi/connectors'
+import { env } from './env'
 
 // Define Celo Sepolia chain (if not in wagmi/chains, we define it)
 export const celoSepoliaChain = celoSepolia || {
@@ -26,12 +27,12 @@ export const config = createConfig({
     }),
     // WalletConnect as fallback
     walletConnect({
-      projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'demo_project_id',
+      projectId: env.WALLETCONNECT_PROJECT_ID,
       showQrModal: true,
     }),
   ],
   transports: {
-    [celoSepoliaChain.id]: http(import.meta.env.VITE_RPC_URL),
+    [celoSepoliaChain.id]: http(env.RPC_URL),
   },
 })
 
