@@ -1,6 +1,7 @@
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
 import { CONTRACT_ADDRESS, REMIT_ESCROW_ABI } from '../lib/constants'
 import { POLLING_INTERVALS } from '../lib/config'
+import { useTransactionStatus } from './useTransactionStatus'
 
 // Types
 export interface Remittance {
@@ -98,95 +99,103 @@ export function useGetTotalRemittances() {
 // Write Hooks
 
 export function useCreateRemittance() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract()
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
+  const { writeContractAsync } = useWriteContract()
+  const txStatus = useTransactionStatus({
+    successMessage: 'Remittance request created successfully!',
+    pendingMessage: 'Creating remittance request...',
+    confirmingMessage: 'Confirming on blockchain...',
+  })
 
-  const createRemittance = (recipient: `0x${string}`, targetAmount: bigint, purpose: string) => {
-    writeContract({
-      address: CONTRACT_ADDRESS,
-      abi: REMIT_ESCROW_ABI,
-      functionName: 'createRemittance',
-      args: [recipient, targetAmount, purpose],
-    })
+  const createRemittance = async (recipient: `0x${string}`, targetAmount: bigint, purpose: string) => {
+    await txStatus.handleTransaction(
+      writeContractAsync({
+        address: CONTRACT_ADDRESS,
+        abi: REMIT_ESCROW_ABI,
+        functionName: 'createRemittance',
+        args: [recipient, targetAmount, purpose],
+      })
+    )
   }
 
   return {
     createRemittance,
-    hash,
-    isPending,
-    isConfirming,
-    isSuccess,
-    error,
+    ...txStatus,
   }
 }
 
 export function useContribute() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract()
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
+  const { writeContractAsync } = useWriteContract()
+  const txStatus = useTransactionStatus({
+    successMessage: 'Contribution successful!',
+    pendingMessage: 'Preparing contribution...',
+    confirmingMessage: 'Confirming contribution...',
+  })
 
-  const contribute = (remittanceId: number, amount: bigint) => {
-    writeContract({
-      address: CONTRACT_ADDRESS,
-      abi: REMIT_ESCROW_ABI,
-      functionName: 'contribute',
-      args: [BigInt(remittanceId)],
-      value: amount,
-    })
+  const contribute = async (remittanceId: number, amount: bigint) => {
+    await txStatus.handleTransaction(
+      writeContractAsync({
+        address: CONTRACT_ADDRESS,
+        abi: REMIT_ESCROW_ABI,
+        functionName: 'contribute',
+        args: [BigInt(remittanceId)],
+        value: amount,
+      })
+    )
   }
 
   return {
     contribute,
-    hash,
-    isPending,
-    isConfirming,
-    isSuccess,
-    error,
+    ...txStatus,
   }
 }
 
 export function useReleaseFunds() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract()
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
+  const { writeContractAsync } = useWriteContract()
+  const txStatus = useTransactionStatus({
+    successMessage: 'Funds released successfully!',
+    pendingMessage: 'Releasing funds...',
+    confirmingMessage: 'Confirming release...',
+  })
 
-  const releaseFunds = (remittanceId: number) => {
-    writeContract({
-      address: CONTRACT_ADDRESS,
-      abi: REMIT_ESCROW_ABI,
-      functionName: 'releaseFunds',
-      args: [BigInt(remittanceId)],
-    })
+  const releaseFunds = async (remittanceId: number) => {
+    await txStatus.handleTransaction(
+      writeContractAsync({
+        address: CONTRACT_ADDRESS,
+        abi: REMIT_ESCROW_ABI,
+        functionName: 'releaseFunds',
+        args: [BigInt(remittanceId)],
+      })
+    )
   }
 
   return {
     releaseFunds,
-    hash,
-    isPending,
-    isConfirming,
-    isSuccess,
-    error,
+    ...txStatus,
   }
 }
 
 export function useCancelRemittance() {
-  const { writeContract, data: hash, isPending, error } = useWriteContract()
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
+  const { writeContractAsync } = useWriteContract()
+  const txStatus = useTransactionStatus({
+    successMessage: 'Remittance cancelled and refunds processed!',
+    pendingMessage: 'Cancelling remittance...',
+    confirmingMessage: 'Confirming cancellation...',
+  })
 
-  const cancelRemittance = (remittanceId: number) => {
-    writeContract({
-      address: CONTRACT_ADDRESS,
-      abi: REMIT_ESCROW_ABI,
-      functionName: 'cancelRemittance',
-      args: [BigInt(remittanceId)],
-    })
+  const cancelRemittance = async (remittanceId: number) => {
+    await txStatus.handleTransaction(
+      writeContractAsync({
+        address: CONTRACT_ADDRESS,
+        abi: REMIT_ESCROW_ABI,
+        functionName: 'cancelRemittance',
+        args: [BigInt(remittanceId)],
+      })
+    )
   }
 
   return {
     cancelRemittance,
-    hash,
-    isPending,
-    isConfirming,
-    isSuccess,
-    error,
+    ...txStatus,
   }
 }
 
