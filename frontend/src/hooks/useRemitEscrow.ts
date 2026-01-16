@@ -1,4 +1,4 @@
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
+import { useReadContract, useWriteContract, useAccount } from 'wagmi'
 import { CONTRACT_ADDRESS, REMIT_ESCROW_ABI } from '../lib/constants'
 import { POLLING_INTERVALS } from '../lib/config'
 import { useTransactionStatus } from './useTransactionStatus'

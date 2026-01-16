@@ -1,14 +1,10 @@
 import { useEffect, useState, useRef, useMemo } from 'react'
-import { TrendingUp, TrendingDown, AlertCircle } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { TrendingUp, TrendingDown, X, DollarSign } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { useGetCurrentPrice } from '../hooks/useRemitEscrow'
+import { Card } from './ui/Card'
 
-/**
- * ForexAlert Component
- * Monitors cUSD/USD exchange rate via Chainlink and alerts users of favorable rate changes
- * Shows real-time price and notifies when rate improves by >2%
- */
 export function ForexAlert() {
   const { data: currentPriceRaw, isLoading } = useGetCurrentPrice()
   const [priceHistory, setPriceHistory] = useState<number[]>([])
@@ -16,37 +12,30 @@ export function ForexAlert() {
   const lastAlertTime = useRef<number>(0)
   const hasShownInitialPrice = useRef(false)
 
-  // Convert Chainlink price (8 decimals) to readable format
   const currentPrice = currentPriceRaw ? Number(currentPriceRaw) / 1e8 : 1.0
 
-  // Update price history
   useEffect(() => {
     if (currentPrice && currentPrice !== 1.0) {
       setPriceHistory((prev) => {
         const updated = [...prev, currentPrice]
-        // Keep only last 10 prices
         return updated.slice(-10)
       })
 
-      // Show initial price (only once)
       if (!hasShownInitialPrice.current) {
         hasShownInitialPrice.current = true
         toast.success(`Current cUSD rate: $${currentPrice.toFixed(4)}`, {
-          icon: '💱',
           duration: 3000,
         })
       }
     }
   }, [currentPrice])
 
-  // Check for favorable rate changes
   useEffect(() => {
     if (priceHistory.length < 2) return
 
     const previousPrice = priceHistory[priceHistory.length - 2]
     const changePercent = ((currentPrice - previousPrice) / previousPrice) * 100
 
-    // Alert if price improved by >2% and enough time has passed since last alert (5 minutes)
     const now = Date.now()
     const timeSinceLastAlert = now - lastAlertTime.current
     const fiveMinutes = 5 * 60 * 1000
@@ -56,19 +45,14 @@ export function ForexAlert() {
       lastAlertTime.current = now
 
       toast.success(
-        `Great news! cUSD rate improved by ${changePercent.toFixed(2)}%! Send now to save more.`,
-        {
-          icon: '📈',
-          duration: 6000,
-        }
+        `cUSD rate improved by ${changePercent.toFixed(2)}%!`,
+        { duration: 6000 }
       )
 
-      // Auto-hide alert after 10 seconds
       setTimeout(() => setShowAlert(false), 10000)
     }
   }, [currentPrice, priceHistory])
 
-  // Memoize price trend calculation to avoid recalculating on every render
   const trend = useMemo(() => {
     if (priceHistory.length < 2) return 'neutral'
     const previousPrice = priceHistory[priceHistory.length - 2]
@@ -79,86 +63,76 @@ export function ForexAlert() {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4">
+      <Card padding="sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
-          <div className="flex-1 space-y-2">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-24" />
-            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-32" />
+          <div className="w-8 h-8 bg-neutral-100 dark:bg-neutral-800 rounded-lg animate-pulse" />
+          <div className="flex-1 space-y-1.5">
+            <div className="h-3 bg-neutral-100 dark:bg-neutral-800 rounded animate-pulse w-20" />
+            <div className="h-4 bg-neutral-100 dark:bg-neutral-800 rounded animate-pulse w-16" />
           </div>
         </div>
-      </div>
+      </Card>
     )
   }
 
   return (
     <>
-      {/* Price Display Card */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4"
-      >
+      <Card padding="sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
-              <span className="text-lg">💱</span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
+              <DollarSign className="w-4 h-4 text-emerald-500" />
             </div>
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">cUSD/USD Rate</p>
-              <div className="flex items-center gap-2">
-                <p className="text-xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">cUSD/USD Rate</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-base font-semibold text-neutral-900 dark:text-white">
                   ${currentPrice.toFixed(4)}
                 </p>
                 {trend === 'up' && (
-                  <TrendingUp className="w-4 h-4 text-green-500" />
+                  <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
                 )}
                 {trend === 'down' && (
-                  <TrendingDown className="w-4 h-4 text-red-500" />
+                  <TrendingDown className="w-3.5 h-3.5 text-red-500" />
                 )}
               </div>
             </div>
           </div>
 
-          <div className="text-right">
-            <p className="text-xs text-gray-500 dark:text-gray-400">Live via Chainlink</p>
-            <div className="flex items-center gap-1 mt-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-xs text-green-600 dark:text-green-400">Active</span>
-            </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+            <span className="text-[10px] text-neutral-400">Live</span>
           </div>
         </div>
-      </motion.div>
+      </Card>
 
-      {/* Favorable Rate Alert Banner */}
       <AnimatePresence>
         {showAlert && (
           <motion.div
-            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg p-4 overflow-hidden"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-3"
           >
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                <AlertCircle className="w-5 h-5 text-white" />
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <TrendingUp className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                    Favorable Rate
+                  </p>
+                  <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5">
+                    cUSD/USD rate improved by more than 2%. Good time to send!
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowAlert(false)}
+                  className="text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-200"
+                  aria-label="Close alert"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
               </div>
-              <div className="flex-1">
-                <h4 className="text-white font-semibold mb-1">
-                  Favorable Exchange Rate!
-                </h4>
-                <p className="text-white/90 text-sm">
-                  The cUSD/USD rate has improved by more than 2%. This is a great time to
-                  send remittances and maximize value!
-                </p>
-              </div>
-              <button
-                onClick={() => setShowAlert(false)}
-                className="flex-shrink-0 text-white/80 hover:text-white transition-colors"
-                aria-label="Close alert"
-              >
-                ✕
-              </button>
             </div>
           </motion.div>
         )}

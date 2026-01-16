@@ -84,7 +84,7 @@ export function ComponentShowcase() {
             <Badge variant="warning">Warning</Badge>
             <Badge variant="danger">Danger</Badge>
             <Badge variant="info">Info</Badge>
-            <Badge variant="purple">Purple</Badge>
+            <Badge variant="orange">Orange</Badge>
           </div>
           <Divider className="my-6" />
           <div className="flex flex-wrap gap-4">

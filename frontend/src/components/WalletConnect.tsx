@@ -1,57 +1,42 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { Wallet, LogOut, Loader2 } from 'lucide-react'
-import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 
-/**
- * WalletConnect Component
- * Single "Connect Wallet" button that connects to MetaMask
- * Shows connected address with truncation and disconnect button
- */
 export function WalletConnect() {
   const { address, isConnected } = useAccount()
   const { connect, connectors, isPending, error } = useConnect()
   const { disconnect } = useDisconnect()
 
-  // Truncate address for display (0x1234...5678)
   const truncateAddress = (addr: string) => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`
   }
 
-  // Handle connection errors
   if (error) {
     toast.error(error.message || 'Failed to connect wallet')
   }
 
   if (isConnected && address) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="flex items-center gap-3"
-      >
-        <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-lg">
-          <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
-          <span className="text-sm font-mono text-green-400">
+      <div className="flex items-center gap-2">
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+          <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400">
             {truncateAddress(address)}
           </span>
         </div>
 
         <button
           onClick={() => disconnect()}
-          className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-lg transition-all duration-200"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-neutral-500 hover:text-red-500 dark:text-neutral-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
           aria-label="Disconnect wallet"
         >
-          <LogOut className="w-4 h-4 text-red-400" />
-          <span className="hidden sm:inline text-sm font-medium text-red-400">
-            Disconnect
-          </span>
+          <LogOut className="w-4 h-4" />
+          <span className="hidden sm:inline text-xs font-medium">Disconnect</span>
         </button>
-      </motion.div>
+      </div>
     )
   }
 
-  // Find MetaMask connector (injected)
   const metaMaskConnector = connectors.find(
     (connector) => connector.id === 'injected' || connector.id === 'metaMask'
   )
@@ -66,22 +51,18 @@ export function WalletConnect() {
   }
 
   return (
-    <motion.button
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+    <button
       onClick={handleConnect}
       disabled={isPending}
-      className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:from-gray-600 disabled:to-gray-600 text-white font-medium rounded-lg shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
+      className="flex items-center gap-2 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 disabled:bg-neutral-300 dark:disabled:bg-neutral-700 text-white text-sm font-medium rounded-lg transition-colors disabled:cursor-not-allowed"
       aria-label="Connect wallet"
     >
       {isPending ? (
         <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
-        <Wallet className="w-4 h-8" />
+        <Wallet className="w-4 h-4" />
       )}
-      <span className="text-sm font-semibold">
-        {isPending ? 'Connecting...' : 'Connect Wallet'}
-      </span>
-    </motion.button>
+      <span>{isPending ? 'Connecting...' : 'Connect'}</span>
+    </button>
   )
 }

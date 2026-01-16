@@ -1,9 +1,11 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Target, User, Calendar, CheckCircle2, XCircle, AlertCircle } from 'lucide-react'
+import { Target, User, Calendar, CheckCircle2, XCircle, Clock } from 'lucide-react'
 import { formatCelo } from '../lib/constants'
 import { Remittance } from '../hooks/useRemitEscrow'
 import { ContributionTracker } from './ContributionTracker'
+import { Card } from './ui/Card'
+import { Badge } from './ui/Badge'
 
 interface RemittanceCardProps {
   remittanceId: number
@@ -12,17 +14,12 @@ interface RemittanceCardProps {
   isRecipient: boolean
 }
 
-/**
- * RemittanceCard Component
- * Displays a single remittance with progress, status, and contribution controls
- */
 export function RemittanceCard({
   remittanceId,
   remittance,
   isCreator,
   isRecipient,
 }: RemittanceCardProps) {
-  // Memoize progress calculation to avoid expensive BigInt arithmetic on every render
   const progress = useMemo(
     () => Number(remittance.currentAmount * 100n / remittance.targetAmount),
     [remittance.currentAmount, remittance.targetAmount]
@@ -30,142 +27,109 @@ export function RemittanceCard({
 
   const isComplete = remittance.currentAmount >= remittance.targetAmount
 
-  // Format date
   const createdDate = new Date(Number(remittance.createdAt) * 1000).toLocaleDateString('en-US', {
-    year: 'numeric',
     month: 'short',
     day: 'numeric',
   })
 
-  // Truncate address
-  const truncateAddress = (addr: string) => {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
-  }
+  const truncateAddress = (addr: string) => `${addr.slice(0, 6)}...${addr.slice(-4)}`
 
-  // Status badge
   const getStatusBadge = () => {
     if (remittance.isCancelled) {
       return (
-        <div className="flex items-center gap-1 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full">
-          <XCircle className="w-4 h-4 text-red-500" />
-          <span className="text-xs font-medium text-red-500">Cancelled</span>
-        </div>
+        <Badge variant="danger" size="sm">
+          <XCircle className="w-3 h-3" />
+          Cancelled
+        </Badge>
       )
     }
     if (remittance.isReleased) {
       return (
-        <div className="flex items-center gap-1 px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full">
-          <CheckCircle2 className="w-4 h-4 text-green-500" />
-          <span className="text-xs font-medium text-green-500">Released</span>
-        </div>
+        <Badge variant="success" size="sm">
+          <CheckCircle2 className="w-3 h-3" />
+          Released
+        </Badge>
       )
     }
     if (isComplete) {
       return (
-        <div className="flex items-center gap-1 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full">
-          <Target className="w-4 h-4 text-blue-500" />
-          <span className="text-xs font-medium text-blue-500">Target Met</span>
-        </div>
+        <Badge variant="info" size="sm">
+          <Target className="w-3 h-3" />
+          Ready
+        </Badge>
       )
     }
     return (
-      <div className="flex items-center gap-1 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full">
-        <AlertCircle className="w-4 h-4 text-amber-500" />
-        <span className="text-xs font-medium text-amber-500">Active</span>
-      </div>
+      <Badge variant="warning" size="sm">
+        <Clock className="w-3 h-3" />
+        Active
+      </Badge>
     )
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 transition-all duration-200"
-    >
+    <Card className="p-4">
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-              Remittance #{remittanceId}
-            </h3>
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm font-medium text-neutral-900 dark:text-white">
+              #{remittanceId}
+            </span>
             {getStatusBadge()}
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
             {remittance.purpose}
           </p>
         </div>
       </div>
 
-      {/* Amount Info */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Current</p>
-          <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
-            {formatCelo(remittance.currentAmount)} CELO
-          </p>
+      {/* Amount Row */}
+      <div className="flex items-baseline justify-between mb-3">
+        <div>
+          <span className="text-lg font-semibold text-neutral-900 dark:text-white">
+            {formatCelo(remittance.currentAmount)}
+          </span>
+          <span className="text-xs text-neutral-400 ml-1">
+            / {formatCelo(remittance.targetAmount)} CELO
+          </span>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Target</p>
-          <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
-            {formatCelo(remittance.targetAmount)} CELO
-          </p>
-        </div>
+        <span className="text-sm font-medium text-neutral-900 dark:text-white">
+          {progress.toFixed(0)}%
+        </span>
       </div>
 
       {/* Progress Bar */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between text-sm mb-2">
-          <span className="text-gray-600 dark:text-gray-400">Progress</span>
-          <span className="font-semibold text-gray-900 dark:text-white">
-            {progress.toFixed(1)}%
-          </span>
-        </div>
-        <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+      <div className="mb-3">
+        <div className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${Math.min(progress, 100)}%` }}
-            transition={{ duration: 1, ease: 'easeOut' }}
-            className={`h-full ${
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className={`h-full rounded-full ${
               isComplete
-                ? 'bg-gradient-to-r from-green-500 to-emerald-500'
-                : 'bg-gradient-to-r from-blue-500 to-purple-500'
+                ? 'bg-emerald-500'
+                : 'bg-orange-500'
             }`}
           />
         </div>
       </div>
 
       {/* Details */}
-      <div className="space-y-2 mb-4 text-sm">
-        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-          <User className="w-4 h-4" />
-          <span>Creator:</span>
-          <span className="font-mono text-gray-900 dark:text-white">
-            {truncateAddress(remittance.creator)}
-          </span>
-          {isCreator && (
-            <span className="px-2 py-0.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs rounded">
-              You
-            </span>
-          )}
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-neutral-500 dark:text-neutral-400 mb-3">
+        <div className="flex items-center gap-1">
+          <User className="w-3 h-3" />
+          <span className="font-mono">{truncateAddress(remittance.creator)}</span>
+          {isCreator && <span className="text-orange-500">(you)</span>}
         </div>
-        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-          <Target className="w-4 h-4" />
-          <span>Recipient:</span>
-          <span className="font-mono text-gray-900 dark:text-white">
-            {truncateAddress(remittance.recipient)}
-          </span>
-          {isRecipient && (
-            <span className="px-2 py-0.5 bg-green-500/10 text-green-600 dark:text-green-400 text-xs rounded">
-              You
-            </span>
-          )}
+        <div className="flex items-center gap-1">
+          <Target className="w-3 h-3" />
+          <span className="font-mono">{truncateAddress(remittance.recipient)}</span>
+          {isRecipient && <span className="text-emerald-500">(you)</span>}
         </div>
-        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-          <Calendar className="w-4 h-4" />
-          <span>Created:</span>
-          <span className="text-gray-900 dark:text-white">{createdDate}</span>
+        <div className="flex items-center gap-1">
+          <Calendar className="w-3 h-3" />
+          <span>{createdDate}</span>
         </div>
       </div>
 
@@ -179,6 +143,6 @@ export function RemittanceCard({
           isComplete={isComplete}
         />
       )}
-    </motion.div>
+    </Card>
   )
 }

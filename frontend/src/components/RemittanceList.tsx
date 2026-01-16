@@ -1,36 +1,33 @@
 import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { Inbox, Loader2 } from 'lucide-react'
-import { motion } from 'framer-motion'
 import { useMyRemittances, useGetRemittance } from '../hooks/useRemitEscrow'
 import { RemittanceCard } from './RemittanceCard'
+import { Card } from './ui/Card'
+import { Badge } from './ui/Badge'
 
-/**
- * RemittanceList Component
- * Displays all remittances created by or received by the connected user
- * Fetches and renders remittance data using custom hooks
- */
 export function RemittanceList() {
   const { address, isConnected } = useAccount()
   const { created, receiving } = useMyRemittances()
 
   if (!isConnected) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-12">
+      <Card className="p-8">
         <div className="flex flex-col items-center justify-center text-center">
-          <Inbox className="w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          <div className="w-12 h-12 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-3">
+            <Inbox className="w-6 h-6 text-neutral-400" />
+          </div>
+          <h3 className="text-base font-medium text-neutral-900 dark:text-white mb-1">
             Connect Your Wallet
           </h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Connect your wallet to view and manage your remittances
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            Connect to view and manage your remittances
           </p>
         </div>
-      </div>
+      </Card>
     )
   }
 
-  // Memoize remittance ID combination to avoid recreating Set/Array on every render
   const allRemittanceIds = useMemo(
     () => Array.from(new Set([...(created || []), ...(receiving || [])])),
     [created, receiving]
@@ -38,35 +35,34 @@ export function RemittanceList() {
 
   if (allRemittanceIds.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-12">
+      <Card className="p-8">
         <div className="flex flex-col items-center justify-center text-center">
-          <Inbox className="w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          <div className="w-12 h-12 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-3">
+            <Inbox className="w-6 h-6 text-neutral-400" />
+          </div>
+          <h3 className="text-base font-medium text-neutral-900 dark:text-white mb-1">
             No Remittances Yet
           </h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Create your first remittance to get started or wait for someone to add you as a
-            recipient
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            Create your first remittance to get started
           </p>
         </div>
-      </div>
+      </Card>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-base font-medium text-neutral-900 dark:text-white">
           Your Remittances
         </h2>
-        <div className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full">
-          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-            {allRemittanceIds.length} Total
-          </span>
-        </div>
+        <Badge variant="default" size="sm">
+          {allRemittanceIds.length} total
+        </Badge>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="space-y-3">
         {allRemittanceIds.map((remittanceId) => (
           <RemittanceListItem
             key={remittanceId.toString()}
@@ -79,7 +75,6 @@ export function RemittanceList() {
   )
 }
 
-// Helper component to fetch and display individual remittance
 function RemittanceListItem({
   remittanceId,
   userAddress,
@@ -91,36 +86,31 @@ function RemittanceListItem({
 
   if (isLoading) {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 flex items-center justify-center"
-      >
-        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-      </motion.div>
+      <Card className="p-4 flex items-center justify-center">
+        <Loader2 className="w-5 h-5 text-orange-500 animate-spin" />
+      </Card>
     )
   }
 
   if (error || !remittanceData) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800 p-6">
-        <p className="text-sm text-red-600 dark:text-red-400">
+      <Card className="p-4 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+        <p className="text-xs text-red-600 dark:text-red-400">
           Failed to load remittance #{remittanceId}
         </p>
-      </div>
+      </Card>
     )
   }
 
-  // Type assertion for the remittance data tuple
   const remittanceArray = remittanceData as readonly [
-    string, // creator
-    string, // recipient
-    bigint, // targetAmount
-    bigint, // currentAmount
-    string, // purpose
-    bigint, // createdAt
-    boolean, // isReleased
-    boolean  // isCancelled
+    string,
+    string,
+    bigint,
+    bigint,
+    string,
+    bigint,
+    boolean,
+    boolean
   ]
 
   const [creator, recipient, targetAmount, currentAmount, purpose, createdAt, isReleased, isCancelled] =

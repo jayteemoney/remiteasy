@@ -36,26 +36,21 @@ export function ContributionTracker({
   const [showContributeInput, setShowContributeInput] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 
-  const {
-    contribute,
-    isPending: isContributing,
-    isConfirming: isContributeConfirming,
-    isSuccess: isContributeSuccess,
-  } = useContribute()
+  const { contribute, status: contributeStatus } = useContribute()
+  const { releaseFunds, status: releaseStatus } = useReleaseFunds()
+  const { cancelRemittance, status: cancelStatus } = useCancelRemittance()
 
-  const {
-    releaseFunds,
-    isPending: isReleasing,
-    isConfirming: isReleaseConfirming,
-    isSuccess: isReleaseSuccess,
-  } = useReleaseFunds()
+  const isContributing = contributeStatus === 'pending'
+  const isContributeConfirming = contributeStatus === 'confirming'
+  const isContributeSuccess = contributeStatus === 'success'
 
-  const {
-    cancelRemittance,
-    isPending: isCancelling,
-    isConfirming: isCancelConfirming,
-    isSuccess: isCancelSuccess,
-  } = useCancelRemittance()
+  const isReleasing = releaseStatus === 'pending'
+  const isReleaseConfirming = releaseStatus === 'confirming'
+  const isReleaseSuccess = releaseStatus === 'success'
+
+  const isCancelling = cancelStatus === 'pending'
+  const isCancelConfirming = cancelStatus === 'confirming'
+  const isCancelSuccess = cancelStatus === 'success'
 
   const handleContribute = async () => {
     if (!isConnected || !address) {
