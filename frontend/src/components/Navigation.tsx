@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   Home,
   Send,
@@ -29,23 +29,19 @@ export function Navigation() {
   const isActive = (path: string) => location.pathname === path
 
   return (
-    <header className="border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header className="sticky top-0 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-lg border-b border-neutral-200 dark:border-neutral-800">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-14">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <motion.div
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.5 }}
-              className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow-lg"
-            >
-              <Send className="w-6 h-6 text-white" />
-            </motion.div>
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className="flex items-center justify-center w-8 h-8 bg-orange-500 rounded-lg">
+              <Send className="w-4 h-4 text-white" />
+            </div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+              <h1 className="text-base font-semibold text-neutral-900 dark:text-white">
                 RemitEasy
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-[10px] text-neutral-500 dark:text-neutral-400 -mt-0.5">
                 Powered by Celo
               </p>
             </div>
@@ -58,42 +54,38 @@ export function Navigation() {
               const active = isActive(item.path)
               return (
                 <Link key={item.path} to={item.path}>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <div
                     className={`
-                      flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200
+                      flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-150
                       ${
                         active
-                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/30'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                          ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
+                          : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800'
                       }
                     `}
                   >
                     <Icon className="w-4 h-4" />
-                    <span className="font-medium">{item.name}</span>
-                  </motion.div>
+                    <span>{item.name}</span>
+                  </div>
                 </Link>
               )
             })}
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {/* Dark Mode Toggle */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={toggleDarkMode}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="p-2 rounded-lg text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
               aria-label="Toggle dark mode"
             >
               {darkMode ? (
-                <Sun className="w-5 h-5 text-yellow-500" />
+                <Sun className="w-4 h-4" />
               ) : (
-                <Moon className="w-5 h-5 text-gray-700" />
+                <Moon className="w-4 h-4" />
               )}
-            </motion.button>
+            </button>
 
             {/* Wallet Connect - Desktop */}
             <div className="hidden md:block">
@@ -103,13 +95,13 @@ export function Navigation() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="md:hidden p-2 rounded-lg text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
               aria-label="Toggle mobile menu"
             >
               {mobileMenuOpen ? (
-                <X className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                <X className="w-5 h-5" />
               ) : (
-                <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                <Menu className="w-5 h-5" />
               )}
             </button>
           </div>
@@ -123,9 +115,10 @@ export function Navigation() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+            transition={{ duration: 0.2 }}
+            className="md:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900"
           >
-            <div className="px-4 py-4 space-y-2">
+            <div className="px-4 py-3 space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon
                 const active = isActive(item.path)
@@ -137,23 +130,23 @@ export function Navigation() {
                   >
                     <div
                       className={`
-                        flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
+                        flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                         ${
                           active
-                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                            ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
+                            : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
                         }
                       `}
                     >
-                      <Icon className="w-5 h-5" />
-                      <span className="font-medium">{item.name}</span>
+                      <Icon className="w-4 h-4" />
+                      <span>{item.name}</span>
                     </div>
                   </Link>
                 )
               })}
 
               {/* Mobile Wallet Connect */}
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800 mt-2">
                 <WalletConnect />
               </div>
             </div>
