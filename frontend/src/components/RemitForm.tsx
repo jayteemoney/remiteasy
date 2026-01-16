@@ -1,22 +1,23 @@
 import { useState, useEffect, FormEvent } from 'react'
 import { useAccount } from 'wagmi'
-import { PlusCircle, Loader2, Send, Phone, Wallet, Info } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { Loader2, Send, Phone, Wallet, ChevronDown, Check } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { useCreateRemittance } from '../hooks/useRemitEscrow'
 import { parseCelo } from '../lib/constants'
 import { VALIDATION } from '../lib/config'
 import { resolvePhoneToAddress, getTestPhoneNumbers, formatPhoneNumber } from '../lib/minipay'
 import { sanitizePurpose } from '../lib/sanitize'
+import { Card } from './ui/Card'
+import { Button } from './ui/Button'
 
-/**
- * RemitForm Component
- * Form for creating new remittance requests
- * Supports recipient address/phone number, target amount, and purpose
- */
 export function RemitForm() {
   const { address, isConnected } = useAccount()
-  const { createRemittance, isPending, isConfirming, isSuccess } = useCreateRemittance()
+  const { createRemittance, status } = useCreateRemittance()
+
+  const isPending = status === 'pending'
+  const isConfirming = status === 'confirming'
+  const isSuccess = status === 'success'
 
   const [recipient, setRecipient] = useState('')
   const [targetAmount, setTargetAmount] = useState('')
@@ -26,7 +27,6 @@ export function RemitForm() {
   const [showTestNumbers, setShowTestNumbers] = useState(false)
   const [isResolving, setIsResolving] = useState(false)
 
-  // Reset form on success
   useEffect(() => {
     if (isSuccess) {
       setRecipient('')
@@ -45,39 +45,33 @@ export function RemitForm() {
       return
     }
 
-    // Validate inputs
     if (!recipient || !targetAmount || !purpose) {
       toast.error('Please fill in all fields')
       return
     }
 
-    // Validate amount
     const amount = parseFloat(targetAmount)
     if (isNaN(amount)) {
       toast.error('Please enter a valid amount')
       return
     }
 
-    // Enforce minimum amount
     if (amount < VALIDATION.MIN_REMITTANCE_AMOUNT) {
       toast.error(`Amount must be at least ${VALIDATION.MIN_REMITTANCE_AMOUNT} CELO`)
       return
     }
 
-    // Enforce maximum amount
     if (amount > VALIDATION.MAX_REMITTANCE_AMOUNT) {
       toast.error(`Amount cannot exceed ${VALIDATION.MAX_REMITTANCE_AMOUNT.toLocaleString()} CELO`)
       return
     }
 
-    // Validate decimal precision (max 18 decimals)
     const decimalPlaces = targetAmount.split('.')[1]?.length || 0
     if (decimalPlaces > VALIDATION.AMOUNT_DECIMALS) {
       toast.error(`Amount can have at most ${VALIDATION.AMOUNT_DECIMALS} decimal places`)
       return
     }
 
-    // Validate purpose length
     if (purpose.length > VALIDATION.MAX_PURPOSE_LENGTH) {
       toast.error(`Purpose must be ${VALIDATION.MAX_PURPOSE_LENGTH} characters or less`)
       return
@@ -85,7 +79,6 @@ export function RemitForm() {
 
     let finalRecipientAddress: `0x${string}`
 
-    // Resolve phone number to address if needed
     if (usePhoneNumber) {
       setIsResolving(true)
       try {
@@ -99,9 +92,8 @@ export function RemitForm() {
 
         finalRecipientAddress = result.address
         setResolvedAddress(result.address)
-        toast.success(`Phone resolved to ${result.address.slice(0, 6)}...${result.address.slice(-4)}`)
-      } catch (error) {
-        console.error('Error resolving phone:', error)
+        toast.success(`Resolved to ${result.address.slice(0, 6)}...${result.address.slice(-4)}`)
+      } catch {
         toast.error('Failed to resolve phone number')
         setIsResolving(false)
         return
@@ -109,7 +101,6 @@ export function RemitForm() {
         setIsResolving(false)
       }
     } else {
-      // Direct address input
       if (!recipient.startsWith('0x')) {
         toast.error('Please enter a valid address starting with 0x')
         return
@@ -122,8 +113,7 @@ export function RemitForm() {
       const sanitizedPurpose = sanitizePurpose(purpose)
       createRemittance(finalRecipientAddress, amountInWei, sanitizedPurpose)
       toast.loading('Creating remittance...', { id: 'create-remittance' })
-    } catch (error) {
-      console.error('Error creating remittance:', error)
+    } catch {
       toast.error('Failed to create remittance')
     }
   }
@@ -131,7 +121,7 @@ export function RemitForm() {
   const handleTestNumberSelect = (phone: string) => {
     setRecipient(phone)
     setShowTestNumbers(false)
-    toast.success(`Test number selected: ${formatPhoneNumber(phone)}`)
+    toast.success(`Selected: ${formatPhoneNumber(phone)}`)
   }
 
   if (isPending || isConfirming) {
@@ -143,178 +133,135 @@ export function RemitForm() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6"
-    >
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-          <PlusCircle className="w-6 h-6 text-white" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Create Remittance
-          </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Start a new group contribution
-          </p>
-        </div>
-      </div>
-
+    <Card className="p-5">
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Recipient Input */}
         <div>
-          <label
-            htmlFor="recipient-input"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
-            Recipient {usePhoneNumber ? 'Phone Number' : 'Address'}
+          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+            Recipient
           </label>
-          <div className="space-y-2">
-            {/* Input Mode Toggle */}
-            <div className="flex items-center gap-2 p-2 bg-gray-100 dark:bg-gray-900 rounded-lg">
-              <button
-                type="button"
-                onClick={() => {
-                  setUsePhoneNumber(false)
-                  setRecipient('')
-                  setResolvedAddress(null)
-                }}
-                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md transition-all ${!usePhoneNumber
-                  ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400'
-                  }`}
-                aria-label="Use wallet address"
-              >
-                <Wallet className="w-4 h-4" />
-                <span className="text-sm font-medium">Address</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setUsePhoneNumber(true)
-                  setRecipient('')
-                  setResolvedAddress(null)
-                }}
-                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md transition-all ${usePhoneNumber
-                  ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400'
-                  }`}
-                aria-label="Use phone number with MiniPay"
-              >
-                <Phone className="w-4 h-4" />
-                <span className="text-sm font-medium">Phone (MiniPay)</span>
-              </button>
-            </div>
 
-            {/* Input Field */}
-            <div className="relative">
-              <input
-                id="recipient-input"
-                type="text"
-                value={recipient}
-                onChange={(e) => {
-                  setRecipient(e.target.value)
-                  setResolvedAddress(null)
-                }}
-                placeholder={usePhoneNumber ? '+254712345678' : '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb'}
-                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 transition-all"
-                disabled={isPending || isConfirming || isResolving}
-                aria-describedby={usePhoneNumber ? "phone-help" : "address-help"}
-              />
-              {isResolving && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
-                </div>
-              )}
-            </div>
+          {/* Input Mode Toggle */}
+          <div className="flex gap-1 p-1 bg-neutral-100 dark:bg-neutral-800 rounded-lg mb-3">
+            <button
+              type="button"
+              onClick={() => {
+                setUsePhoneNumber(false)
+                setRecipient('')
+                setResolvedAddress(null)
+              }}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                !usePhoneNumber
+                  ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm'
+                  : 'text-neutral-500 dark:text-neutral-400'
+              }`}
+            >
+              <Wallet className="w-3.5 h-3.5" />
+              Address
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setUsePhoneNumber(true)
+                setRecipient('')
+                setResolvedAddress(null)
+              }}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                usePhoneNumber
+                  ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm'
+                  : 'text-neutral-500 dark:text-neutral-400'
+              }`}
+            >
+              <Phone className="w-3.5 h-3.5" />
+              Phone
+            </button>
+          </div>
 
-            {/* Resolved Address Display */}
-            <AnimatePresence>
-              {resolvedAddress && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg"
-                >
-                  <p className="text-sm text-green-800 dark:text-green-200">
-                    ✓ Resolved to: <span className="font-mono">{resolvedAddress}</span>
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* MiniPay Test Numbers */}
-            {usePhoneNumber && (
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  onClick={() => setShowTestNumbers(!showTestNumbers)}
-                  className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
-                  aria-label="Show test phone numbers"
-                  aria-expanded={showTestNumbers}
-                >
-                  <Info className="w-4 h-4" />
-                  {showTestNumbers ? 'Hide' : 'Show'} test phone numbers
-                </button>
-
-                <AnimatePresence>
-                  {showTestNumbers && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg space-y-2"
-                      role="region"
-                      aria-label="Test phone numbers"
-                    >
-                      <p className="text-xs text-blue-800 dark:text-blue-200 font-medium mb-2">
-                        Click to use a test number:
-                      </p>
-                      <div className="grid grid-cols-1 gap-1">
-                        {getTestPhoneNumbers().slice(0, 4).map((test) => (
-                          <button
-                            key={test.phone}
-                            type="button"
-                            onClick={() => handleTestNumberSelect(test.phone)}
-                            className="text-left px-2 py-1 text-xs bg-white dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded border border-blue-200 dark:border-blue-700 transition-colors"
-                            aria-label={`Use test number for ${test.country}`}
-                          >
-                            <span className="font-mono text-blue-600 dark:text-blue-400">{test.phone}</span>
-                            <span className="text-gray-600 dark:text-gray-400"> ({test.country})</span>
-                          </button>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <p id="phone-help" className="text-xs text-gray-500 dark:text-gray-400">
-                  Enter phone number in international format (e.g., +254712345678)
-                </p>
+          {/* Input Field */}
+          <div className="relative">
+            <input
+              type="text"
+              value={recipient}
+              onChange={(e) => {
+                setRecipient(e.target.value)
+                setResolvedAddress(null)
+              }}
+              placeholder={usePhoneNumber ? '+254712345678' : '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb'}
+              className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-lg text-sm text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-transparent transition-all disabled:opacity-50"
+              disabled={isPending || isConfirming || isResolving}
+            />
+            {isResolving && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <Loader2 className="w-4 h-4 text-orange-500 animate-spin" />
               </div>
             )}
-
-            {!usePhoneNumber && (
-              <p id="address-help" className="text-xs text-gray-500 dark:text-gray-400">
-                Enter recipient's Celo wallet address (0x...)
-              </p>
-            )}
           </div>
+
+          {/* Resolved Address */}
+          <AnimatePresence>
+            {resolvedAddress && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-2"
+              >
+                <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="text-xs font-mono text-emerald-700 dark:text-emerald-300 truncate">
+                    {resolvedAddress}
+                  </span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Test Numbers for Phone */}
+          {usePhoneNumber && (
+            <div className="mt-2">
+              <button
+                type="button"
+                onClick={() => setShowTestNumbers(!showTestNumbers)}
+                className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400 hover:text-orange-500 dark:hover:text-orange-400"
+              >
+                <ChevronDown className={`w-3 h-3 transition-transform ${showTestNumbers ? 'rotate-180' : ''}`} />
+                {showTestNumbers ? 'Hide' : 'Show'} test numbers
+              </button>
+
+              <AnimatePresence>
+                {showTestNumbers && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-2 p-2 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-lg"
+                  >
+                    <div className="grid grid-cols-2 gap-1">
+                      {getTestPhoneNumbers().slice(0, 4).map((test) => (
+                        <button
+                          key={test.phone}
+                          type="button"
+                          onClick={() => handleTestNumberSelect(test.phone)}
+                          className="text-left px-2 py-1.5 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded transition-colors"
+                        >
+                          <span className="font-mono text-orange-600 dark:text-orange-400">{test.phone}</span>
+                          <span className="text-neutral-400 ml-1">({test.country})</span>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
 
         {/* Target Amount */}
         <div>
-          <label
-            htmlFor="target-amount"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
-            Target Amount (CELO)
+          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+            Amount (CELO)
           </label>
           <input
-            id="target-amount"
             type="number"
             step="0.000000000000000001"
             min={VALIDATION.MIN_REMITTANCE_AMOUNT}
@@ -322,78 +269,63 @@ export function RemitForm() {
             value={targetAmount}
             onChange={(e) => setTargetAmount(e.target.value)}
             placeholder="100.00"
-            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 transition-all"
+            className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-lg text-sm text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-transparent transition-all disabled:opacity-50"
             disabled={isPending || isConfirming}
-            aria-describedby="amount-help"
           />
-          <p id="amount-help" className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Between {VALIDATION.MIN_REMITTANCE_AMOUNT} and {VALIDATION.MAX_REMITTANCE_AMOUNT.toLocaleString()} CELO (max {VALIDATION.AMOUNT_DECIMALS} decimals)
+          <p className="text-[10px] text-neutral-400 mt-1">
+            Min {VALIDATION.MIN_REMITTANCE_AMOUNT} · Max {VALIDATION.MAX_REMITTANCE_AMOUNT.toLocaleString()} CELO
           </p>
         </div>
 
         {/* Purpose */}
         <div>
-          <label
-            htmlFor="purpose"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
-            Purpose
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              Purpose
+            </label>
+            <span className="text-[10px] text-neutral-400">
+              {purpose.length}/{VALIDATION.MAX_PURPOSE_LENGTH}
+            </span>
+          </div>
           <textarea
-            id="purpose"
             value={purpose}
             onChange={(e) => setPurpose(e.target.value)}
-            placeholder="e.g., Family medical expenses, School fees, Emergency fund..."
-            rows={3}
+            placeholder="e.g., Family medical expenses, School fees..."
+            rows={2}
             maxLength={VALIDATION.MAX_PURPOSE_LENGTH}
-            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 transition-all resize-none"
+            className="w-full px-3 py-2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded-lg text-sm text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-transparent transition-all resize-none disabled:opacity-50"
             disabled={isPending || isConfirming}
-            aria-describedby="purpose-help"
           />
-          <div className="flex items-center justify-between mt-1">
-            <p id="purpose-help" className="text-xs text-gray-500 dark:text-gray-400">
-              Describe what this remittance is for
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {purpose.length}/{VALIDATION.MAX_PURPOSE_LENGTH}
-            </p>
-          </div>
         </div>
 
         {/* Submit Button */}
-        <motion.button
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.99 }}
+        <Button
           type="submit"
+          fullWidth
           disabled={isPending || isConfirming || !isConnected || isResolving}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:from-gray-600 disabled:to-gray-600 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 disabled:cursor-not-allowed"
-          aria-label="Create remittance"
+          isLoading={isPending || isConfirming || isResolving}
+          className="mt-2"
         >
-          {isPending || isConfirming || isResolving ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
-              <span>
-                {isResolving
-                  ? 'Resolving phone...'
-                  : isPending
-                    ? 'Confirm in wallet...'
-                    : 'Creating...'}
-              </span>
-            </>
+          {isResolving ? (
+            'Resolving...'
+          ) : isPending ? (
+            'Confirm in wallet...'
+          ) : isConfirming ? (
+            'Creating...'
           ) : (
             <>
-              <Send className="w-5 h-5" aria-hidden="true" />
-              <span>Create Remittance</span>
+              <Send className="w-4 h-4" />
+              Create Remittance
             </>
           )}
-        </motion.button>
+        </Button>
 
         {!isConnected && (
-          <p className="text-center text-sm text-amber-600 dark:text-amber-400" role="alert">
-            Please connect your wallet to create a remittance
+          <p className="text-center text-xs text-amber-600 dark:text-amber-400">
+            Connect your wallet to create a remittance
           </p>
         )}
       </form>
-    </motion.div>
+    </Card>
   )
 }
