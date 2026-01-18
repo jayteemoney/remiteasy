@@ -29,15 +29,15 @@ export function Transactions() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-4">
-        <Card className="text-center max-w-sm w-full p-8">
-          <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center mx-auto mb-4">
-            <Wallet className="w-6 h-6 text-orange-500" />
+      <div className="min-h-[70vh] flex items-center justify-center px-6">
+        <Card className="text-center max-w-md w-full" padding="lg">
+          <div className="w-16 h-16 rounded-2xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center mx-auto mb-6">
+            <Wallet className="w-8 h-8 text-orange-500" />
           </div>
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-2">
+          <h2 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
             Connect Your Wallet
           </h2>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="text-neutral-600 dark:text-neutral-400">
             Connect your wallet to view your transactions.
           </p>
         </Card>
@@ -46,32 +46,32 @@ export function Transactions() {
   }
 
   return (
-    <div className="py-8 sm:py-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
+    <div className="page-container">
+      <div className="container-app space-y-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-neutral-900 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white">
               Transactions
             </h1>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+            <p className="text-neutral-600 dark:text-neutral-400 mt-1">
               View and manage all your remittances
             </p>
           </div>
-          <Button variant="outline" size="sm" className="gap-2 self-start sm:self-auto">
+          <Button variant="outline" className="gap-2 self-start sm:self-auto">
             <Download className="w-4 h-4" />
             Export
           </Button>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {filters.map((filter) => (
             <button
               key={filter.key}
               onClick={() => setFilterStatus(filter.key)}
               className={`
-                p-3 rounded-lg border text-center transition-all
+                p-4 sm:p-5 rounded-xl border text-center transition-all
                 ${
                   filterStatus === filter.key
                     ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
@@ -80,7 +80,7 @@ export function Transactions() {
               `}
             >
               <p
-                className={`text-xl font-semibold ${
+                className={`text-2xl sm:text-3xl font-bold ${
                   filterStatus === filter.key
                     ? 'text-orange-600 dark:text-orange-400'
                     : 'text-neutral-900 dark:text-white'
@@ -88,7 +88,7 @@ export function Transactions() {
               >
                 {stats[filter.key]}
               </p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
                 {filter.label}
               </p>
             </button>
@@ -96,8 +96,8 @@ export function Transactions() {
         </div>
 
         {/* Search and Filters */}
-        <Card padding="sm">
-          <div className="flex flex-col sm:flex-row gap-3">
+        <Card padding="md">
+          <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <Input
                 placeholder="Search by recipient or ID..."
@@ -106,13 +106,13 @@ export function Transactions() {
                 leftIcon={<Search className="w-4 h-4" />}
               />
             </div>
-            <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0">
+            <div className="flex gap-2 overflow-x-auto">
               {filters.map((filter) => (
                 <button
                   key={filter.key}
                   onClick={() => setFilterStatus(filter.key)}
                   className={`
-                    px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors
+                    px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors
                     ${
                       filterStatus === filter.key
                         ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900'
@@ -131,8 +131,8 @@ export function Transactions() {
         <RemittanceList />
 
         {/* Footer info */}
-        <div className="flex items-center gap-2 text-xs text-neutral-400">
-          <FileText className="w-3.5 h-3.5" />
+        <div className="flex items-center justify-center gap-2 text-sm text-neutral-500">
+          <FileText className="w-4 h-4" />
           <span>
             Showing {stats[filterStatus]} transactions
             {searchQuery && ` matching "${searchQuery}"`}

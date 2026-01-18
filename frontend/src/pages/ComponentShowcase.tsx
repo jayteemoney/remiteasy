@@ -384,25 +384,25 @@ export function ComponentShowcase() {
                 </p>
               </div>
             </Card>
-            <Card glass>
+            <Card>
               <div className="text-center">
-                <User className="w-12 h-12 mx-auto mb-4 text-purple-600" />
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">
-                  Glass Card
+                <User className="w-12 h-12 mx-auto mb-4 text-orange-500" />
+                <h3 className="font-bold text-neutral-900 dark:text-white mb-2">
+                  Standard Card
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Frosted glass effect
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  Clean minimal style
                 </p>
               </div>
             </Card>
-            <Card gradient>
+            <Card padding="lg">
               <div className="text-center">
-                <Settings className="w-12 h-12 mx-auto mb-4 text-gray-600 dark:text-gray-300" />
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">
-                  Gradient Card
+                <Settings className="w-12 h-12 mx-auto mb-4 text-neutral-600 dark:text-neutral-300" />
+                <h3 className="font-bold text-neutral-900 dark:text-white mb-2">
+                  Large Padding
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Subtle gradient
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  More spacious card
                 </p>
               </div>
             </Card>
