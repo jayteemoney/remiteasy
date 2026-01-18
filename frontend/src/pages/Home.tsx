@@ -43,39 +43,39 @@ export function Home() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="py-16 sm:py-20 lg:py-28">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="max-w-3xl">
+      <section className="py-16 sm:py-24 lg:py-32">
+        <div className="container-app">
+          <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 rounded-full">
-              <Globe className="w-3.5 h-3.5 text-orange-500" />
-              <span className="text-xs font-medium text-orange-600 dark:text-orange-400">
+            <div className="inline-flex items-center gap-2 mb-8 px-4 py-2 bg-orange-50 dark:bg-orange-900/20 rounded-full">
+              <Globe className="w-4 h-4 text-orange-500" />
+              <span className="text-sm font-medium text-orange-600 dark:text-orange-400">
                 Powered by Celo Blockchain
               </span>
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-neutral-900 dark:text-white mb-6 leading-[1.1] tracking-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-white mb-6 leading-tight tracking-tight">
               Send Money{' '}
               <span className="text-orange-500">Together</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-lg sm:text-xl text-neutral-500 dark:text-neutral-400 mb-8 max-w-xl leading-relaxed">
+            <p className="text-lg sm:text-xl text-neutral-600 dark:text-neutral-400 mb-10 max-w-2xl mx-auto leading-relaxed">
               Pool funds with friends and family for cross-border remittances.
               Low fees, transparent, blockchain-powered.
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-start gap-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/send">
-                <Button size="lg" className="gap-2">
+                <Button size="lg" className="gap-2 px-8">
                   Start Sending
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
               <Link to="/dashboard">
-                <Button size="lg" variant="outline">
+                <Button size="lg" variant="outline" className="px-8">
                   View Dashboard
                 </Button>
               </Link>
@@ -83,18 +83,18 @@ export function Home() {
           </div>
 
           {/* Stats */}
-          <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-8">
+          <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 max-w-4xl mx-auto">
             {[
               { value: '0.5%', label: 'Platform Fee' },
               { value: '10k+', label: 'Users' },
               { value: '$1M+', label: 'Volume' },
               { value: '24/7', label: 'Available' },
             ].map((stat) => (
-              <div key={stat.label}>
-                <div className="text-2xl sm:text-3xl font-semibold text-neutral-900 dark:text-white">
+              <div key={stat.label} className="text-center">
+                <div className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white">
                   {stat.value}
                 </div>
-                <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                <div className="text-sm sm:text-base text-neutral-500 dark:text-neutral-400 mt-2">
                   {stat.label}
                 </div>
               </div>
@@ -104,29 +104,29 @@ export function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 sm:py-20 border-t border-neutral-200 dark:border-neutral-800">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="max-w-xl mb-12">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-neutral-900 dark:text-white mb-4">
+      <section className="py-16 sm:py-24 border-t border-neutral-200 dark:border-neutral-800">
+        <div className="container-app">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white mb-4">
               Why RemitEasy?
             </h2>
-            <p className="text-neutral-500 dark:text-neutral-400">
+            <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
               Built for the way families actually send money — together.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
             {features.map((feature) => {
               const Icon = feature.icon
               return (
-                <Card key={feature.title} className="p-6">
-                  <div className="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center mb-4">
-                    <Icon className="w-5 h-5 text-orange-500" />
+                <Card key={feature.title} padding="lg" hover>
+                  <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center mb-6">
+                    <Icon className="w-6 h-6 text-orange-500" />
                   </div>
-                  <h3 className="text-lg font-medium text-neutral-900 dark:text-white mb-2">
+                  <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                  <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
                     {feature.description}
                   </p>
                 </Card>
@@ -137,33 +137,33 @@ export function Home() {
       </section>
 
       {/* How It Works */}
-      <section className="py-16 sm:py-20 bg-neutral-100 dark:bg-neutral-900">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="max-w-xl mb-12">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-neutral-900 dark:text-white mb-4">
+      <section className="py-16 sm:py-24 bg-neutral-100 dark:bg-neutral-900/50">
+        <div className="container-app">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white mb-4">
               How It Works
             </h2>
-            <p className="text-neutral-500 dark:text-neutral-400">
+            <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
               Simple, secure, and transparent in three easy steps.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12 max-w-5xl mx-auto">
             {steps.map((step, index) => (
-              <div key={step.number} className="relative">
+              <div key={step.number} className="relative text-center">
                 {/* Connector line */}
                 {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-6 left-[calc(100%-1rem)] w-[calc(100%-2rem)] h-px bg-neutral-300 dark:bg-neutral-700" />
+                  <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-px bg-neutral-300 dark:bg-neutral-700" />
                 )}
 
-                <div className="flex flex-col">
-                  <span className="text-4xl font-semibold text-neutral-200 dark:text-neutral-800 mb-4">
+                <div className="flex flex-col items-center">
+                  <span className="text-6xl font-bold text-neutral-200 dark:text-neutral-800 mb-6">
                     {step.number}
                   </span>
-                  <h3 className="text-lg font-medium text-neutral-900 dark:text-white mb-2">
+                  <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
                     {step.title}
                   </h3>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                  <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-xs">
                     {step.description}
                   </p>
                 </div>
@@ -174,21 +174,21 @@ export function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 sm:py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <Card className="bg-neutral-900 dark:bg-neutral-800 border-neutral-800 dark:border-neutral-700 p-8 sm:p-12">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <section className="py-16 sm:py-24">
+        <div className="container-app">
+          <Card className="bg-neutral-900 dark:bg-neutral-800 border-neutral-800 dark:border-neutral-700" padding="lg">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
               <div>
-                <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">
+                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
                   Ready to get started?
                 </h2>
-                <p className="text-neutral-400">
+                <p className="text-neutral-400 text-lg">
                   Join thousands sending money the smart way.
                 </p>
               </div>
               <Link to="/send">
-                <Button size="lg" className="gap-2 whitespace-nowrap">
-                  <Wallet className="w-4 h-4" />
+                <Button size="lg" className="gap-2 px-8 whitespace-nowrap">
+                  <Wallet className="w-5 h-5" />
                   Create Remittance
                 </Button>
               </Link>
