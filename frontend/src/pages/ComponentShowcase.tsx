@@ -34,7 +34,8 @@ export function ComponentShowcase() {
 
   return (
     <AnimatedPage>
-      <div className="max-w-7xl mx-auto space-y-12">
+      <div className="page-container">
+        <div className="container-app space-y-12">
         {/* Header */}
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -408,6 +409,7 @@ export function ComponentShowcase() {
             </Card>
           </div>
         </Card>
+        </div>
       </div>
     </AnimatedPage>
   )

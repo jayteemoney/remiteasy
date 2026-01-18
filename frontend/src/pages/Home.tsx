@@ -174,7 +174,7 @@ export function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 sm:py-24">
+      <section className="pt-16 pb-20 sm:pt-24 sm:pb-28 lg:pb-32">
         <div className="container-app">
           <Card className="bg-neutral-900 dark:bg-neutral-800 border-neutral-800 dark:border-neutral-700" padding="lg">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
