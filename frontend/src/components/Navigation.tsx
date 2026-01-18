@@ -30,7 +30,7 @@ export function Navigation() {
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-lg border-b border-neutral-200 dark:border-neutral-800">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="container-app">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5">

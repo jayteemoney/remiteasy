@@ -21,7 +21,7 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Footer */}
       <footer className="border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <div className="container-app py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Brand */}
             <div>
