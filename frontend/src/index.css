@@ -76,6 +76,30 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
+/* Container utility - centered with proper padding */
+.container-app {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .container-app {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-app {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
 /* Custom scrollbar - minimal style */
 ::-webkit-scrollbar {
   width: 8px;
@@ -185,4 +209,14 @@ h1, h2, h3, h4, h5, h6 {
   transition-property: background-color, border-color, color, fill, stroke;
   transition-duration: 150ms;
   transition-timing-function: ease-in-out;
+}
+
+/* Section spacing */
+.section-padding {
+  @apply py-16 sm:py-20 lg:py-24;
+}
+
+/* Page container */
+.page-container {
+  @apply py-8 sm:py-12 lg:py-16;
 }
