@@ -3,8 +3,8 @@ import { cn } from '@/lib/cn'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
-  error?: string
-  helperText?: string
+  error?: string | undefined
+  helperText?: string | undefined
   leftElement?: ReactNode
   rightElement?: ReactNode
 }
