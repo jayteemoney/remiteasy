@@ -1,6 +1,7 @@
 import { RouterProvider } from 'react-router-dom'
 import { Web3Provider, ThemeProvider, ToastProvider } from '@/providers'
 import { ErrorBoundary } from '@/components/common'
+import { EventListenerProvider } from '@/services/eventListeners'
 import { router } from '@/router'
 
 export function App() {
@@ -9,7 +10,9 @@ export function App() {
       <ThemeProvider>
         <Web3Provider>
           <ToastProvider>
-            <RouterProvider router={router} />
+            <EventListenerProvider>
+              <RouterProvider router={router} />
+            </EventListenerProvider>
           </ToastProvider>
         </Web3Provider>
       </ThemeProvider>
