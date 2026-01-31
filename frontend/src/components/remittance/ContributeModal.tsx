@@ -22,7 +22,14 @@ export function ContributeModal({
 }: ContributeModalProps) {
   const [amount, setAmount] = useState('')
   const { address } = useAccount()
-  const { data: balance } = useBalance({ address })
+  const { data: balance } = useBalance({
+    address,
+    query: {
+      staleTime: 30_000,
+      gcTime: 60_000,
+      refetchOnWindowFocus: false,
+    },
+  })
   const {
     contribute,
     isPending,

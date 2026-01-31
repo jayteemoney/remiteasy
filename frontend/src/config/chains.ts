@@ -11,8 +11,8 @@ export const celoAlfajores = defineChain({
   rpcUrls: {
     default: {
       http: [
-        'https://celo-alfajores-rpc.publicnode.com',
         'https://alfajores-forno.celo-testnet.org',
+        'https://forno.celo-testnet.org',
       ],
     },
   },

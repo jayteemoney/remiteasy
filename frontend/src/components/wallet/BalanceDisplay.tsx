@@ -30,6 +30,9 @@ export function BalanceDisplay({
     address,
     query: {
       enabled: !!address,
+      staleTime: 30_000, // 30 seconds
+      gcTime: 60_000, // 1 minute
+      refetchOnWindowFocus: false,
     },
   })
 

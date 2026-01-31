@@ -8,7 +8,10 @@ export const wagmiConfig = getDefaultConfig({
   projectId: env.VITE_WALLETCONNECT_PROJECT_ID,
   chains: [celoAlfajores],
   transports: {
-    [celoAlfajores.id]: http(),
+    [celoAlfajores.id]: http('https://alfajores-forno.celo-testnet.org', {
+      retryCount: 3,
+      retryDelay: 1000,
+    }),
   },
 })
 
