@@ -1,8 +1,8 @@
 import { defineChain } from 'viem'
 
-export const celoAlfajores = defineChain({
-  id: 44787,
-  name: 'Celo Alfajores',
+export const celoSepolia = defineChain({
+  id: 11142220,
+  name: 'Celo Sepolia',
   nativeCurrency: {
     decimals: 18,
     name: 'Celo',
@@ -11,15 +11,14 @@ export const celoAlfajores = defineChain({
   rpcUrls: {
     default: {
       http: [
-        'https://alfajores-forno.celo-testnet.org',
-        'https://forno.celo-testnet.org',
+        'https://forno.celo-sepolia.celo-testnet.org',
       ],
     },
   },
   blockExplorers: {
     default: {
       name: 'Celoscan',
-      url: 'https://alfajores.celoscan.io',
+      url: 'https://celo-sepolia.blockscout.com',
     },
   },
   testnet: true,
@@ -47,6 +46,6 @@ export const celo = defineChain({
   testnet: false,
 })
 
-// For development/testing, use Alfajores
-export const supportedChains = [celoAlfajores] as const
-export const defaultChain = celoAlfajores
+// For development/testing, use Celo Sepolia
+export const supportedChains = [celoSepolia] as const
+export const defaultChain = celoSepolia

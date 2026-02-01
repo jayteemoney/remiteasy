@@ -3,7 +3,7 @@ import { ExternalLink, Github, Twitter } from 'lucide-react'
 import { formatAddress } from '@/lib/format'
 
 const CONTRACT_ADDRESS = (import.meta.env.VITE_CONTRACT_ADDRESS || '0x6F491FaBdEc72fD14e9E014f50B2ffF61C508bf1') as `0x${string}`
-const EXPLORER_URL = 'https://alfajores.celoscan.io/address/'
+const EXPLORER_URL = 'https://celo-sepolia.blockscout.com/address/'
 
 export function Footer() {
   return (
@@ -97,7 +97,7 @@ export function Footer() {
                 </a>
               </li>
               <li className="text-sm text-gray-500 dark:text-gray-400">
-                Network: Celo Alfajores
+                Network: Celo Sepolia
               </li>
               <li>
                 <a
